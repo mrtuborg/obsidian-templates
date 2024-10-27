@@ -18,7 +18,8 @@ if (!moment(title, dayFormat, true).isValid()) {
   tR += "\nconst {mentionsProcessor} = await cJS();\n";
   tR += "const tagId = dv.current().file.name;\n"
   tR += "await mentionsProcessor.run(app, dv, allBlocks, tagId);\n"
-  tR += "```\n\n";
+  tR += "```\n";
+  tR += "---\n";
   tR += "# Notes:\n\n";
 } else {
   const year = moment(tp.file.title,'YYYY-MM-DD').format("YYYY");
