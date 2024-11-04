@@ -37,11 +37,13 @@ if (!moment(title, dayFormat, true).isValid()) {
   tR += "const journalPages = dv.pages('\"Journal\"');\n";
   tR += "const allBlocks = await noteBlocksParser.run(app, journalPages);\n";
   tR += "\nconst {todoRollover} = await cJS();\n";
-  tR += "const remove = false;\n";
+  tR += "const remove = true;\n";
   tR += "await todoRollover.run(app, dv, allBlocks, remove);\n";
   tR += "\nconst {mentionsProcessor} = await cJS();\n";
   tR += "const tagId = dv.current().file.name;\n";
   tR += "await mentionsProcessor.run(app, dv, allBlocks, tagId);\n";
+  tR += "\nconst {scriptsRemove} = await cJS();\n";
+  tR += "await scriptsRemove.run(app, dv);\n";
   tR += "```\n";
   tR += "---\n";
   tR += "# Notes:\n\n";
