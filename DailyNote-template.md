@@ -34,8 +34,9 @@ if (!moment(title, dayFormat, true).isValid()) {
 
   tR += "let responsible = dv.current().responsible?.toString();\n";
   tR += "if (!responsible) responsible = \"Me\";\n";
+  tR += "let currentStage = dv.current().stage || \"active\";\n";
 
-  tR += "let frontmatter = fileIO.generateActivityHeader(startDate, \"active\", responsible);\n";
+  tR += "let frontmatter = fileIO.generateActivityHeader(startDate, currentStage, responsible);\n";
   // Remove the generated header from currentPageContent
   tR += "currentPageContent = currentPageContent.replace(frontmatter, '').trim();\n";
 
@@ -60,9 +61,36 @@ if (!moment(title, dayFormat, true).isValid()) {
 
   //// Attributes Processor //////////////////////////////////////////
   //------------------------------------------------------------------
-  //tR += "\n";
-  //tR += "const {attributesProcessor} = await cJS();\n";
-  //tR += "await attributesProcessor.run(app, dv, dv.current().file);\n"
+  tR += "\n";
+  tR += "// Get the content after the dataviewjs block to process attributes\n";
+  tR += "let contentAfterDataview = \"\";\n";
+  tR += "if (currentPageContent.trim().length > 0) {\n";
+  tR += "  const lines = currentPageContent.split('\\n');\n";
+  tR += "  let inDataviewBlock = false;\n";
+  tR += "  let afterDataview = false;\n";
+  tR += "  for (let i = 0; i < lines.length; i++) {\n";
+  tR += "    if (lines[i].startsWith('```dataviewjs')) {\n";
+  tR += "      inDataviewBlock = true;\n";
+  tR += "    } else if (lines[i].startsWith('```') && inDataviewBlock) {\n";
+  tR += "      inDataviewBlock = false;\n";
+  tR += "      afterDataview = true;\n";
+  tR += "    } else if (afterDataview) {\n";
+  tR += "      contentAfterDataview += lines[i] + '\\n';\n";
+  tR += "    }\n";
+  tR += "  }\n";
+  tR += "}\n";
+  tR += "\n";
+  tR += "const {attributesProcessor} = await cJS();\n";
+  tR += "const frontmatterObj = {\n";
+  tR += "  startDate: startDate,\n";
+  tR += "  stage: currentStage,\n";
+  tR += "  responsible: responsible\n";
+  tR += "};\n";
+  tR += "await attributesProcessor.processAttributes(frontmatterObj, contentAfterDataview);\n";
+  tR += "// Update currentStage with the processed value\n";
+  tR += "currentStage = frontmatterObj.stage;\n";
+  tR += "// Update frontmatter with processed attributes\n";
+  tR += "frontmatter = fileIO.generateActivityHeader(startDate, currentStage, responsible);\n";
 
   //// Mentions processor ///////////////////////////////////////////////////
   // If one day in the past was mentioning today's date
