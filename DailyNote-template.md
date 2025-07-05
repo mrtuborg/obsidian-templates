@@ -86,11 +86,14 @@ if (!moment(title, dayFormat, true).isValid()) {
   tR += "  stage: currentStage,\n";
   tR += "  responsible: responsible\n";
   tR += "};\n";
-  tR += "await attributesProcessor.processAttributes(frontmatterObj, contentAfterDataview);\n";
-  tR += "// Update currentStage with the processed value\n";
+  tR += "const processedContent = await attributesProcessor.processAttributes(frontmatterObj, contentAfterDataview);\n";
+  tR += "// Update values with the processed values\n";
   tR += "currentStage = frontmatterObj.stage;\n";
+  tR += "startDate = frontmatterObj.startDate;\n";
   tR += "// Update frontmatter with processed attributes\n";
   tR += "frontmatter = fileIO.generateActivityHeader(startDate, currentStage, responsible);\n";
+  tR += "// Update contentAfterDataview with processed content (directives converted to comments)\n";
+  tR += "contentAfterDataview = processedContent;\n";
 
   //// Mentions processor ///////////////////////////////////////////////////
   // If one day in the past was mentioning today's date
@@ -100,11 +103,13 @@ if (!moment(title, dayFormat, true).isValid()) {
   tR += "\nconst {mentionsProcessor} = await cJS();\n";
   tR += "const tagId = currentPageFile.name;\n";
 
-  tR += "const mentions = await mentionsProcessor.run(pageContent, allBlocks, tagId);\n";
-  tR += "if (mentions && mentions.trim().length > 0) pageContent = mentions;\n";
+  tR += "const mentions = await mentionsProcessor.run(contentAfterDataview, allBlocks, tagId, frontmatterObj);\n";
+  tR += "if (mentions && mentions.trim().length > 0) contentAfterDataview = mentions;\n";
+  tR += "// Update frontmatter again after mentions processing (in case directives from other files changed it)\n";
+  tR += "frontmatter = fileIO.generateActivityHeader(frontmatterObj.startDate, frontmatterObj.stage, frontmatterObj.responsible);\n";
 
   /// === Here we need to save currentPageContent to the current file
-  tR += "const combinedContent = [frontmatter, dataviewJsBlock, pageContent].join(\"\\n\\n\");\n";
+  tR += "const combinedContent = [frontmatter, dataviewJsBlock, contentAfterDataview].join(\"\\n\\n\");\n";
   tR += "await fileIO.saveFile(app, currentPageFile.path, combinedContent);\n";
   tR += "```\n";
   
