@@ -1,8 +1,6 @@
-<%*
-// Activity template using centralized activityComposer
-tR += "```dataviewjs\n";
-tR += "const {activityComposer} = await cJS();\n";
-tR += "const currentPageFile = dv.current().file;\n";
-tR += "await activityComposer.processActivity(app, dv, currentPageFile);\n";
-tR += "```\n";
-%>
+```dataviewjs
+const {activityComposer} = await cJS();
+const currentPageFile = dv.current().file;
+await activityComposer.processActivity(app, dv, currentPageFile);
+```
+

@@ -1,4 +1,4 @@
-[[ <% moment(tp.file.title,'YYYY-MM').add(-1, 'months').format("YYYY-MM") %> ]] | [[ <% moment(tp.file.title,'YYYY-MM').add(+1, 'months').format("YYYY-MM") %> ]]
+[[ Invalid date ]] | [[ Invalid date ]]
 
 ## Resource: :luc_banknote: MONEY
 ### Recurrent payments for this month

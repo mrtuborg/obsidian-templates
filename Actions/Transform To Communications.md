@@ -3,7 +3,7 @@ phone:
 email: 
 birthday:
 ---
-<% await tp.file.move ("/Resources/Communications/" + tp.file.title) %>
+
 ## Activities
 ```dataviewjs
 const currentPerson = dv.current().file.name;

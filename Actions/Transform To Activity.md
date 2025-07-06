@@ -1,16 +1,16 @@
 ---
-date_added: <% tp.date.now("YYYY-MM-DD") %>
+date_added: 2025-07-06
 stage: planning
 action: define
 timeSlot: on-the-fly
 isImportant: true
 isUrgent: true
-checkpoint: <% tp.date.now("YYYY-MM-DD") %>
-deadline: <% tp.date.now("YYYY-MM-DD") %>
+checkpoint: 2025-07-06
+deadline: 2025-07-06
 responsible:
 accountable: 
 ---
- <% await tp.file.move ("/Activities/Backlog/" + tp.file.title) %>
+ 
 ### Notes
 ```dataviewjs
 

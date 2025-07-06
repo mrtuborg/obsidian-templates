@@ -1,4 +1,4 @@
-### Year: [[ <% moment(tp.file.title,'YYYY-[W]W').format("YYYY") %> ]] | Month:  [[ <% moment(tp.file.title,'YYYY-[W]W').format("YYYY-MM") %> ]]
+### Year: [[ Invalid date ]] | Month:  [[ Invalid date ]]
 
 
 ## Resource: :luc_banknote: MONEY
