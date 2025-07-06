@@ -1,6 +1,6 @@
 ```dataviewjs
-const {activityComposer} = await cJS();
+const {dailyNoteComposer} = await cJS();
 const currentPageFile = dv.current().file;
-await activityComposer.processActivity(app, dv, currentPageFile);
+const title = currentPageFile.name;
+await dailyNoteComposer.processDailyNote(app, dv, currentPageFile, title);
 ```
-
