@@ -263,25 +263,25 @@ function generateDailyNoteProcessingBlock(title) {
   block += "const allBlocks = await noteBlocksParser.run(app, journalPages, \"YYYY-MM-DD\");\n\n";
 
   // --- Todo Rollover (Today Only) ---
-  block += "// Todo Rollover - Only for today's note\n";
-  block += "if (pageIsToday) {\n";
-  block += "  const {todoRollover} = await cJS();\n";
-  block += "  const remove = true;\n";
-  block += "  \n";
-  block += "  console.log(\"Starting todo rollover for:\", dailyNoteDate);\n";
-  block += "  console.log(\"Total blocks found:\", allBlocks.length);\n";
-  block += "  console.log(\"Todo blocks:\", allBlocks.filter((b) => b.blockType === \"todo\").length);\n";
-  block += "  \n";
-  block += "  const todos = await todoRollover.run(app, allBlocks, dailyNoteDate, pageContent, remove);\n";
-  block += "  console.log(\"Todo rollover result:\", typeof todos, todos ? todos.length : 0);\n";
-  block += "  \n";
-  block += "  if (todos && typeof todos === \"string\" && todos.trim().length > 0) {\n";
-  block += "    pageContent = todos;\n";
-  block += "    console.log(\"Todo rollover completed successfully\");\n";
-  block += "  } else {\n";
-  block += "    console.log(\"No todos to rollover or empty result\");\n";
-  block += "  }\n";
-  block += "}\n\n";
+  // block += "// Todo Rollover - Only for today's note\n";
+  // block += "if (pageIsToday) {\n";
+  // block += "  const {todoRollover} = await cJS();\n";
+  // block += "  const remove = true;\n";
+  // block += "  \n";
+  // block += "  console.log(\"Starting todo rollover for:\", dailyNoteDate);\n";
+  // block += "  console.log(\"Total blocks found:\", allBlocks.length);\n";
+  // block += "  console.log(\"Todo blocks:\", allBlocks.filter((b) => b.blockType === \"todo\").length);\n";
+  // block += "  \n";
+  // block += "  const todos = await todoRollover.run(app, allBlocks, dailyNoteDate, pageContent, remove);\n";
+  // block += "  console.log(\"Todo rollover result:\", typeof todos, todos ? todos.length : 0);\n";
+  // block += "  \n";
+  // block += "  if (todos && typeof todos === \"string\" && todos.trim().length > 0) {\n";
+  // block += "    pageContent = todos;\n";
+  // block += "    console.log(\"Todo rollover completed successfully\");\n";
+  // block += "  } else {\n";
+  // block += "    console.log(\"No todos to rollover or empty result\");\n";
+  // block += "  }\n";
+  // block += "}\n\n";
 
   // --- Activities Integration (Today Only) ---
   block += "// Add activities in progress - Only for today's note\n";
