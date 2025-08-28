@@ -41,11 +41,12 @@ function generateActivityProcessingBlock() {
 
   block += "let responsible = dv.current().responsible?.toString();\n";
   block += "if (!responsible) responsible = \"Me\";\n";
-  block += "let currentStage = dv.current().stage || \"active\";\n\n";
+  block += "let currentStage = dv.current().stage || \"active\";\n";
+  block += "let currentType = dv.current().type || null; // Preserve type field\n\n";
 
   // --- Content Structure Extraction ---
   block += "// Generate and extract content structure\n";
-  block += "let frontmatter = fileIO.generateActivityHeader(startDate, currentStage, responsible);\n";
+  block += "let frontmatter = fileIO.generateActivityHeader(startDate, currentStage, responsible, currentType);\n";
   block += "currentPageContent = currentPageContent.replace(frontmatter, '').trim();\n\n";
 
   block += "let dataviewJsBlock = \"\";\n";
@@ -79,28 +80,16 @@ function generateActivityProcessingBlock() {
   block += "  }\n";
   block += "}\n\n";
 
-  // --- Attributes Processing ---
-  block += "// Process activity attributes and directives\n";
-  block += "const {attributesProcessor} = await cJS();\n";
-  block += "const frontmatterObj = {\n";
-  block += "  startDate: startDate,\n";
-  block += "  stage: currentStage,\n";
-  block += "  responsible: responsible\n";
-  block += "};\n\n";
-
-  block += "// Process content and update frontmatter object\n";
-  block += "const processedContent = await attributesProcessor.processAttributes(frontmatterObj, contentAfterDataview);\n";
-  block += "currentStage = frontmatterObj.stage;\n";
-  block += "startDate = frontmatterObj.startDate;\n\n";
-
-  block += "// Regenerate frontmatter with processed attributes\n";
-  block += "frontmatter = fileIO.generateActivityHeader(startDate, currentStage, responsible);\n";
-  block += "contentAfterDataview = processedContent;\n\n";
-
-  // --- Mentions and Cross-References Processing ---
+  // --- Mentions and Cross-References Processing (FIRST) ---
   block += "// Process mentions and cross-references from other notes\n";
   block += "const {mentionsProcessor} = await cJS();\n";
   block += "const tagId = currentPageFile.name;\n";
+  block += "const frontmatterObj = {\n";
+  block += "  startDate: startDate,\n";
+  block += "  stage: currentStage,\n";
+  block += "  type: currentType, // Include type in frontmatter object\n";
+  block += "  responsible: responsible\n";
+  block += "};\n";
   block += "const mentions = await mentionsProcessor.run(contentAfterDataview, allBlocks, tagId, frontmatterObj);\n\n";
 
   block += "// Apply mentions if found\n";
@@ -108,9 +97,17 @@ function generateActivityProcessingBlock() {
   block += "  contentAfterDataview = mentions;\n";
   block += "}\n\n";
 
-  block += "// Final frontmatter update after mentions processing\n";
-  block += "// (mentions processing may have updated attributes via directives)\n";
-  block += "frontmatter = fileIO.generateActivityHeader(frontmatterObj.startDate, frontmatterObj.stage, frontmatterObj.responsible);\n\n";
+  // --- Attributes Processing (SECOND) ---
+  block += "// Process activity attributes and directives (including those from mentions)\n";
+  block += "const {attributesProcessor} = await cJS();\n";
+  block += "const processedContent = await attributesProcessor.processAttributes(frontmatterObj, contentAfterDataview);\n";
+  block += "currentStage = frontmatterObj.stage;\n";
+  block += "startDate = frontmatterObj.startDate;\n";
+  block += "currentType = frontmatterObj.type; // Update type from processed attributes\n\n";
+
+  block += "// Regenerate frontmatter with processed attributes\n";
+  block += "frontmatter = fileIO.generateActivityHeader(startDate, currentStage, responsible, currentType);\n";
+  block += "contentAfterDataview = processedContent;\n\n";
 
   // --- Final Assembly and Save ---
   block += "// Combine all processed elements and save\n";

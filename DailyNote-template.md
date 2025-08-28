@@ -286,6 +286,10 @@ function generateDailyNoteProcessingBlock(title) {
   // --- Activities Integration (Today Only) ---
   block += "// Add activities in progress - Only for today's note\n";
   block += "if (pageIsToday) {\n";
+  block += "  // Sync activity todos before copying to daily note\n";
+  block += "  const {todoSyncManager} = await cJS();\n";
+  block += "  await todoSyncManager.run(app);\n";
+  block += "  \n";
   block += "  const {activitiesInProgress} = await cJS();\n";
   block += "  const activities = await activitiesInProgress.run(app, pageContent);\n";
   block += "  \n";
