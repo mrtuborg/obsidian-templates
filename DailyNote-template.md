@@ -71,7 +71,8 @@ responsible: [Me]
 
 function generateActivityDataviewBlock(title) {
   return `\`\`\`dataviewjs
-const {fileIO} = await cJS();
+const cjsResult = await cJS();
+const fileIO = cjsResult.createfileIOInstance();
 const currentPageFile = dv.current().file;
 let currentPageContent = await fileIO.loadFile(app, currentPageFile.path);
 const startDateRaw = dv.current().startDate;
@@ -107,7 +108,7 @@ if (currentPageContent.trim().length > 0) {
 }
 
 // Process attributes
-const {attributesProcessor} = await cJS();
+const attributesProcessor = cjsResult.createattributesProcessorInstance();
 const frontmatterObj = {
   startDate: startDate,
   stage: currentStage,
@@ -119,13 +120,13 @@ startDate = frontmatterObj.startDate;
 frontmatter = fileIO.generateActivityHeader(startDate, currentStage, responsible);
 contentAfterDataview = processedContent;
 
-const {noteBlocksParser} = await cJS();
+const noteBlocksParser = cjsResult.createnoteBlocksParserInstance();
 const journalPages = dv.pages('"Journal"').filter(
   (page) => !page.file.path.trim().includes("${title}")
 );
 const allBlocks = await noteBlocksParser.run(app, journalPages, "YYYY-MM-DD");
 
-const {mentionsProcessor} = await cJS();
+const mentionsProcessor = cjsResult.creatementionsProcessorInstance();
 const tagId = currentPageFile.name;
 const mentions = await mentionsProcessor.run(contentAfterDataview, allBlocks, tagId, frontmatterObj);
 if (mentions && mentions.trim().length > 0) contentAfterDataview = mentions;
@@ -233,7 +234,8 @@ function generateDailyNoteProcessingBlock(title) {
   
   // --- Setup and Initialization ---
   block += "// Daily Note Processing Pipeline\n";
-  block += "const {fileIO} = await cJS();\n";
+  block += "const cjsResult = await cJS();\n";
+  block += "const fileIO = cjsResult.createfileIOInstance();\n";
   block += "const currentPageFile = dv.current().file;\n";
   block += "let currentPageContent = await fileIO.loadFile(app, currentPageFile.path);\n\n";
 
@@ -256,7 +258,7 @@ function generateDailyNoteProcessingBlock(title) {
 
   // --- Journal Blocks Parsing ---
   block += "// Parse all journal pages for processing\n";
-  block += "const {noteBlocksParser} = await cJS();\n";
+  block += "const noteBlocksParser = cjsResult.createnoteBlocksParserInstance();\n";
   block += "const journalPages = dv.pages('\"Journal\"').filter(\n";
   block += `  (page) => !page.file.path.trim().includes(\"${title}\")\n`;
   block += ");\n";
@@ -287,11 +289,11 @@ function generateDailyNoteProcessingBlock(title) {
   block += "// Add activities in progress - Only for today's note\n";
   block += "if (pageIsToday) {\n";
   block += "  // Sync activity todos before copying to daily note\n";
-  block += "  const {todoSyncManager} = await cJS();\n";
+  block += "  const todoSyncManager = cjsResult.createtodoSyncManagerInstance();\n";
   block += "  await todoSyncManager.run(app);\n";
   block += "  \n";
-  block += "  const {activitiesInProgress} = await cJS();\n";
-  block += "  const activities = await activitiesInProgress.run(app, pageContent);\n";
+  block += "  const activitiesInProgress = cjsResult.createactivitiesInProgressInstance();\n";
+  block += "  const activities = await activitiesInProgress.run(app);\n";
   block += "  \n";
   block += "  if (activities && activities.trim().length > 0) {\n";
   block += "    pageContent = activities;\n";
@@ -300,7 +302,7 @@ function generateDailyNoteProcessingBlock(title) {
 
   // --- Mentions Processing ---
   block += "// Process mentions and reminders\n";
-  block += "const {mentionsProcessor} = await cJS();\n";
+  block += "const mentionsProcessor = cjsResult.creatementionsProcessorInstance();\n";
   block += "const tagId = currentPageFile.name;\n";
   block += "const mentions = await mentionsProcessor.run(pageContent, allBlocks, tagId);\n\n";
 
@@ -311,7 +313,7 @@ function generateDailyNoteProcessingBlock(title) {
   // --- Script Cleanup (Today Only) ---
   block += "// Remove processing scripts - Only for today's note\n";
   block += "if (pageIsToday) {\n";
-  block += "  const {scriptsRemove} = await cJS();\n";
+  block += "  const scriptsRemove = cjsResult.createscriptsRemoveInstance();\n";
   block += "  dataviewJsBlock = await scriptsRemove.run(dataviewJsBlock);\n";
   block += "}\n\n";
 
